@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finance IA Dashboard</title>
+    <link rel="stylesheet" href="navbar.css" />
+    <link rel="stylesheet" href="dashboard.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="app-container">
+      
+      <aside class="sidebar-lateral">
+        <div class="sidebar-header">
+            <span class="logo-f">F</span>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="#" class="sidebar-item active" title="Home"><i class="fas fa-home"></i></a>
+            <a href="#" class="sidebar-item" title="Gráficos"><i class="fas fa-chart-line"></i></a>
+            <a href="#" class="sidebar-item" title="Pizza"><i class="fas fa-chart-pie"></i></a>
+            <a href="#" class="sidebar-item" title="Portfólio"><i class="fas fa-briefcase"></i></a>
+            <a href="#" class="sidebar-item" title="Configurações"><i class="fas fa-cog"></i></a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#" class="sidebar-item notification-icon" title="Notificações">
+                <i class="fas fa-bell"></i>
+                <span class="red-dot"></span>
+            </a>
+            <a href="#" class="sidebar-item" onclick="logout()" title="Sair">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="header">
+          <h1>Finance IA Dashboard</h1>
+          <button class="btn-primary" onclick="logout()">Sair</button>
+        </header>
+
+        <section class="grid-cards">
+          
+          <div class="card card-ia">
+            <div class="ia-content">
+              <div class="ia-icon-wrapper">
+                <i class="fa-solid fa-comment-dots"></i>
+              </div>
+              <div class="ia-texts">
+                <h2>Assistente IA</h2>
+                <p>Analisar seus gastos automaticamente e gerar insights.</p>
+              </div>
+            </div>
+            <button class="btn-primary" id="btnAnalisar" onclick="analisar()">Analisar</button>
+          </div>
+
+          <div class="card card-stat">
+            <div class="stat-block">
+              <div class="stat-header">
+                <h3>Receita</h3>
+                <span class="badge badge-success"><i class="fa-solid fa-caret-up"></i> 1,38%</span>
+              </div>
+              <p id="totalReceita" class="text-success">R$ 24.579,00</p>
+            </div>
+            <div class="stat-block">
+              <div class="stat-header">
+                <h3>Gastos</h3>
+                <span class="badge badge-danger"><i class="fa-solid fa-caret-down"></i> 0,06%</span>
+              </div>
+              <p id="totalGasto" class="text-danger">R$ 12.254,00</p>
+            </div>
+          </div>
+
+          <div class="card card-stat card-saldo">
+            <div class="stat-header">
+              <h3>Saldo Atual</h3>
+              <i class="fa-solid fa-chevron-up" style="color: var(--text-muted); font-size: 12px;"></i>
+            </div>
+            <p id="saldo" class="text-white">R$ 15.582,00</p>
+            <div class="mini-chart-container">
+              <canvas id="saldoChart"></canvas>
+            </div>
+          </div>
+
+        </section>
+
+        <div class="dashboard-grid">
+            
+            <div class="grid-column">
+                
+                <section class="card mb-section">
+                  <div class="stat-header">
+                    <h2 class="section-title" style="margin-bottom: 0;">Fluxo de Caixa Mensal</h2>
+                    <select class="input-field" style="width: auto; padding: 6px 12px;">
+                      <option>Fluxo de meses</option>
+                    </select>
+                  </div>
+                  <div class="chart-container" style="position: relative; height: 350px; width: 100%; margin-top: 20px;">
+                    <canvas id="fluxoCaixaChart"></canvas>
+                  </div>
+                </section>
+
+                <section class="card mb-section">
+                  <h2 class="section-title">Últimos Lançamentos</h2>
+                  <div class="table-container">
+                    <table class="lancamentos-table">
+                      <thead>
+                        <tr>
+                          <th>Descrição</th>
+                          <th>Categoria</th>
+                          <th>Valor</th>
+                          <th>Data</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tabela-lancamentos">
+                        </tbody>
+                    </table>
+                  </div>
+                </section>
+
+            </div>
+
+            <div class="grid-column">
+                
+                <section class="card mb-section">
+                  <h2 class="section-title">Análise Vertical</h2>
+                  <div class="chart-container" style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="financeChart"></canvas>
+                  </div>
+                </section>
+
+                <section class="card mb-section">
+                  <h2 class="section-title">Novo Lançamento</h2>
+                  <form class="form-lancamento">
+                    
+                    <label class="input-label">Descrição do Lançamento</label>
+                    <input id="descInput" type="text" placeholder="Ex: Pagamento de Cliente, Compra de Software..." class="input-field mb-3" />
+
+                    <div class="form-grid">
+                      <div class="form-group">
+                        <label class="input-label">Categoria</label>
+                        <select id="catInput" class="input-field">
+                          <option value="Receita - Serviço">Receita - Serviço</option>
+                          <option value="Receita - Venda">Receita - Venda</option>
+                          <option value="Gasto - Equipamentos">Gasto - Equipamentos</option>
+                          <option value="Gasto - Software">Gasto - Software</option>
+                          <option value="Gasto - Impostos">Gasto - Impostos</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label class="input-label">Valor (R$)</label>
+                        <input id="valorInput" type="number" placeholder="0.00" class="input-field" />
+                      </div>
+                    </div>
+
+                    <label class="input-label" for="dataInput">Data</label>
+                    <input id="dataInput" type="date" class="input-field mb-3" />
+
+                    <button type="button" class="btn-primary" onclick="adicionarNovoLancamento()">
+                      Adicionar Lançamento
+                    </button>
+                  </form>
+                </section>
+
+            </div>
+        </div>
+
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="dashboard.js"></script>
+  </body>
+</html>

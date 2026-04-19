@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finance IA - Autenticação</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  </head>
+  <body class="auth-body">
+    <main class="auth-container">
+
+      <div class="brand-box">
+        <span class="brand-badge">✨ Sistema Inteligente</span>
+        <h1>A sua gestão financeira num só lugar.</h1>
+        <p>Faça login para aceder ao seu painel, analisar gráficos automáticos e tomar as melhores decisões para o seu negócio com Inteligência Artificial.</p>
+      </div>
+
+      <div class="forms-wrapper">
+        
+        <div id="box-login" class="card auth-card">
+          <h2>Bem-vindo de volta</h2>
+          <p class="card-subtitle">Insira as suas credenciais para entrar</p>
+          
+          <form onsubmit="realizarLogin(event)">
+            <div class="form-group">
+              <label>E-mail</label>
+              <div class="input-wrapper">
+                <input type="email" id="login-email" placeholder="O seu e-mail" required oninput="validarEmail(this)" />
+                <i class="fa-solid fa-check check-icon"></i>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Senha</label>
+              <div class="input-wrapper">
+                <input type="password" id="login-senha" placeholder="A sua senha" required />
+                <i class="fa-regular fa-eye toggle-password" onclick="togglePassword(this)"></i>
+              </div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+              <label style="color: var(--muted); font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <input type="checkbox" style="width: auto;"> Lembrar-me
+              </label>
+              <a href="#" onclick="alternarTela('box-forgot')" style="color: var(--primary); text-decoration: none; font-size: 14px;">Esqueceu a senha?</a>
+            </div>
+            
+            <button type="submit" id="btn-login" class="btn btn-primary" style="width: 100%;">Entrar na plataforma</button>
+          </form>
+          
+          <p class="footer-text">
+            Não tem uma conta? <a href="#" onclick="alternarTela('box-register')">Criar conta</a>
+          </p>
+        </div>
+
+        <div id="box-register" class="card auth-card hidden">
+          <h2>Nova Conta</h2>
+          <p class="card-subtitle">Preencha os dados para começar</p>
+          
+          <form onsubmit="realizarCadastro(event)">
+            <div class="form-group">
+              <label>Nome completo</label>
+              <input type="text" id="reg-nome" placeholder="O seu nome" required />
+            </div>
+            <div class="form-group">
+              <label>E-mail</label>
+              <div class="input-wrapper">
+                <input type="email" id="reg-email" placeholder="O seu e-mail" required oninput="validarEmail(this)" />
+                <i class="fa-solid fa-check check-icon"></i>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Senha</label>
+              <div class="input-wrapper">
+                <input type="password" id="reg-senha" placeholder="Crie uma senha" required />
+                <i class="fa-regular fa-eye toggle-password" onclick="togglePassword(this)"></i>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Confirmar Senha</label>
+              <div class="input-wrapper">
+                <input type="password" id="reg-senha-conf" placeholder="Repita a senha" required />
+                <i class="fa-regular fa-eye toggle-password" onclick="togglePassword(this)"></i>
+              </div>
+            </div>
+            <p id="erro-senha" class="error-text hidden">As senhas não coincidem!</p>
+            
+            <button type="submit" id="btn-register" class="btn btn-primary" style="width: 100%;">Cadastrar</button>
+          </form>
+          
+          <p class="footer-text">
+            Já tem uma conta? <a href="#" onclick="alternarTela('box-login')">Fazer login</a>
+          </p>
+        </div>
+
+        <div id="box-forgot" class="card auth-card hidden">
+          <h2>Recuperar Senha</h2>
+          <p class="card-subtitle">Enviaremos um link seguro para o seu e-mail</p>
+          
+          <form onsubmit="solicitarRecuperacao(event)">
+            <div class="form-group">
+              <label>E-mail registado</label>
+              <div class="input-wrapper">
+                <input type="email" id="forgot-email" placeholder="O seu e-mail" required oninput="validarEmail(this)" />
+                <i class="fa-solid fa-check check-icon"></i>
+              </div>
+            </div>
+            
+            <button type="submit" id="btn-forgot" class="btn btn-primary" style="width: 100%;">Enviar Link</button>
+          </form>
+          
+          <p class="footer-text">
+            <a href="#" onclick="alternarTela('box-login')">Voltar para o Login</a>
+          </p>
+        </div>
+
+        <div id="box-reset" class="card auth-card hidden">
+          <h2>Nova Senha</h2>
+          <p class="card-subtitle">Crie uma nova senha para a sua conta</p>
+          
+          <form onsubmit="redefinirSenha(event)">
+            <div class="form-group">
+              <label>A sua nova senha</label>
+              <div class="input-wrapper">
+                <input type="password" id="reset-senha" placeholder="Digite a nova senha" required />
+                <i class="fa-regular fa-eye toggle-password" onclick="togglePassword(this)"></i>
+              </div>
+            </div>
+            <button type="submit" id="btn-reset" class="btn btn-primary" style="width: 100%;">Salvar Nova Senha</button>
+          </form>
+          
+          <p class="footer-text">
+            <a href="/">Cancelar e voltar ao Login</a>
+          </p>
+        </div>
+
+      </div>
+    </main>
+    <script src="auth.js"></script>
+  </body>
+</html>

@@ -1,0 +1,496 @@
+/* =========================================
+   Variaveis de Cores e Configurações
+   ========================================= */
+:root {
+    --bg-dark: #0b0f19;
+    --bg-card: #151b2b;
+    --bg-input: #1c2336;
+    --color-primary: #5b58f5;
+    --color-primary-hover: #4946d4;
+    --color-border: #2a3449;
+    
+    --text-main: #e5e7eb;
+    --text-muted: #9ca3af;
+    --text-success: #4ade80;
+    --text-danger: #f87171;
+    --text-white: #ffffff;
+}
+
+/* =========================================
+   Reset Básico
+   ========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+}
+
+/* =========================================
+   Layout Principal (Flexbox)
+   ========================================= */
+.app-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar-lateral {
+    width: 80px;
+    background-color: var(--bg-card);
+    border-right: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0;
+}
+
+.logo-f {
+    color: #f97316; /* Laranja */
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    align-items: center;
+}
+
+.sidebar-item {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.sidebar-item:hover {
+    color: var(--text-white);
+}
+
+.sidebar-item.active {
+    background-color: rgba(91, 88, 245, 0.2);
+    color: var(--color-primary);
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+}
+
+.notification-icon {
+    position: relative;
+}
+
+.red-dot {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    background-color: var(--text-danger);
+    border-radius: 50%;
+}
+
+/* Conteúdo Principal */
+.main-content {
+    flex: 1;
+    padding: 32px;
+    overflow-y: auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-white);
+    letter-spacing: 0.5px;
+}
+
+/* =========================================
+   Botões e Inputs
+   ========================================= */
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--text-white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    box-shadow: 0 4px 14px rgba(91, 88, 245, 0.3);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.input-field {
+    width: 100%;
+    background-color: var(--bg-input);
+    border: 1px solid var(--color-border);
+    color: var(--text-white);
+    padding: 12px;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.input-field:focus {
+    border-color: var(--color-primary);
+}
+
+.input-field::placeholder {
+    color: #6b7280;
+}
+
+/* =========================================
+   Cards e Grids (Topo)
+   ========================================= */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.grid-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+/* Card Assistente IA */
+.card-ia {
+    grid-column: span 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.ia-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.ia-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    background-color: #3b82f6;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 26px;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+
+.ia-texts h2 {
+    font-size: 18px;
+    color: var(--text-white);
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.ia-texts p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+/* =========================================
+   Cards de Estatísticas (Receita, Gastos, Saldo)
+   ========================================= */
+.card-stat {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+}
+
+.stat-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.stat-header h3 {
+    font-size: 15px;
+    color: var(--text-white);
+    font-weight: 500;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-success {
+    color: var(--text-success);
+    background-color: rgba(74, 222, 128, 0.15);
+}
+
+.badge-danger {
+    color: var(--text-danger);
+    background-color: rgba(248, 113, 113, 0.15);
+}
+
+.card-stat p, .stat-block p {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.text-success { color: var(--text-success); }
+.text-danger { color: var(--text-danger); }
+.text-white { color: var(--text-white); }
+
+/* Card de Saldo */
+.card-saldo {
+    justify-content: flex-start;
+    padding-bottom: 12px;
+    overflow: hidden;
+    gap: 0;
+}
+
+.mini-chart-container {
+    width: 100%;
+    height: 80px;
+    margin-top: 16px;
+    position: relative;
+}
+
+/* =========================================
+   Layout das Colunas (Grade Principal de Baixo)
+   ========================================= */
+.dashboard-grid {
+    display: grid;
+    /* Divide a tela: Esquerda maior (2.2), Direita menor (1) */
+    grid-template-columns: 2.2fr 1fr; 
+    gap: 24px;
+}
+
+.grid-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px; /* Espaço entre os cards da mesma coluna */
+}
+
+/* Remove a margem inferior extra dos cards dentro da coluna */
+.grid-column .card {
+    margin-bottom: 0; 
+}
+
+/* Manter a classe mb-section caso você use ela solta depois */
+.mb-section {
+    margin-bottom: 32px;
+}
+
+.section-title {
+    font-size: 18px;
+    color: var(--text-white);
+    margin-bottom: 20px;
+}
+
+/* =========================================
+   Gráficos
+   ========================================= */
+.chart-container {
+    width: 100%;
+    height: 300px;
+    position: relative;
+}
+
+/* =========================================
+   Formulário de Lançamento
+   ========================================= */
+.form-lancamento {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.input-label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.mb-3 { margin-bottom: 16px; }
+.mt-2 { margin-top: 8px; }
+
+/* =========================================
+   Tabela de Últimos Lançamentos e Efeitos
+   ========================================= */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.lancamentos-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.lancamentos-table th {
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 16px 8px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.lancamentos-table td {
+    padding: 16px 8px;
+    color: var(--text-main);
+    font-size: 14px;
+    border-bottom: 1px solid rgba(42, 52, 73, 0.4);
+    vertical-align: middle;
+}
+
+.lancamentos-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Efeito de Hover (Brilho) na linha da tabela */
+.lancamentos-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.lancamentos-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+    cursor: default;
+}
+
+.desc-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.icon-receita {
+    background-color: rgba(74, 222, 128, 0.15);
+    color: var(--text-success);
+}
+
+.icon-gasto {
+    background-color: rgba(248, 113, 113, 0.15);
+    color: var(--text-danger);
+}
+
+/* =========================================
+   Responsividade (Media Queries)
+   ========================================= */
+@media (max-width: 1024px) {
+    /* No tablet, os cards do topo viram 2 colunas */
+    .grid-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Faz o card da IA ocupar a linha inteira */
+    .card-ia {
+        grid-column: span 2;
+    }
+    
+    /* Quebra a coluna de baixo: Tabela e Gráficos ficam empilhados */
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Esconde o menu lateral no celular */
+    .sidebar-lateral {
+        display: none;
+    }
+    
+    /* No celular, todos os cards do topo ficam empilhados */
+    .grid-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Volta o card IA para ocupar só 1 coluna na grade empilhada */
+    .card-ia {
+        grid-column: span 1;
+    }
+
+    /* Coloca os campos do formulário um embaixo do outro no celular */
+    .form-grid {
+        grid-template-columns: 1fr; 
+    }
+
+    .main-content {
+        padding: 16px;
+    }
+
+    .header h1 {
+        font-size: 20px;
+    }
+}

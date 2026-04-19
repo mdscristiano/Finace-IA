@@ -1,0 +1,331 @@
+/* =========================================
+   Variáveis de Cores e Configurações globais
+   ========================================= */
+:root {
+    --bg-dark: #0b0f19;
+    --bg-card: #151b2b;
+    --bg-input: #1c2336;
+    --color-primary: #5b58f5;
+    --color-primary-hover: #4946d4;
+    --color-border: #2a3449;
+    
+    --text-main: #e5e7eb;
+    --text-muted: #9ca3af;
+    --text-success: #4ade80;
+    --text-danger: #f87171;
+    --text-white: #ffffff;
+
+    /* Cores Específicas da Navbar Nova */
+    --nav-bg: #101827; 
+    --nav-logo: #f97316;
+}
+
+/* =========================================
+   Reset Básico
+   ========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+}
+
+/* =========================================
+   Layout Principal (Flexbox)
+   ========================================= */
+.app-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* =========================================
+   Navbar Lateral (Nova)
+   ========================================= */
+.sidebar-lateral {
+    width: 60px; /* Largura estreita como na foto */
+    background-color: var(--nav-bg);
+    border-right: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    padding: 20px 0;
+    z-index: 10;
+}
+
+.sidebar-header, .sidebar-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sidebar-header {
+    margin-bottom: 30px;
+}
+
+.logo-f {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--nav-logo); /* Laranja exato do logo 'F' */
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espaçamento entre ícones */
+    align-items: center;
+}
+
+.sidebar-item {
+    color: var(--text-muted); /* Cor do ícone inativo */
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    font-size: 18px; /* Tamanho do ícone */
+}
+
+.sidebar-item:hover, .sidebar-item.active {
+    color: var(--color-primary); /* Cor do ícone ativo (lilás) */
+    background-color: rgba(91, 88, 245, 0.2); /* Fundo lilás sutil */
+}
+
+.sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    margin-top: auto; /* Garante que o rodapé fique no final */
+}
+
+.notification-icon {
+    position: relative;
+}
+
+.red-dot {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 8px;
+    height: 8px;
+    background-color: var(--text-danger); /* Vermelho do ponto */
+    border-radius: 50%;
+    border: 1px solid var(--nav-bg); /* Contorno sutil com a cor de fundo */
+}
+
+/* =========================================
+   Conteúdo Principal (Dashboard)
+   ========================================= */
+.main-content {
+    flex: 1;
+    padding: 32px;
+    overflow-y: auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-white);
+    letter-spacing: 0.5px;
+}
+
+/* =========================================
+   Botões e Inputs
+   ========================================= */
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--text-white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    box-shadow: 0 4px 14px rgba(91, 88, 245, 0.3);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.input-field {
+    width: 100%;
+    background-color: var(--bg-input);
+    border: 1px solid var(--color-border);
+    color: var(--text-white);
+    padding: 12px;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.input-field:focus {
+    border-color: var(--color-primary);
+}
+
+.input-field::placeholder {
+    color: #6b7280;
+}
+
+/* =========================================
+   Cards e Grids
+   ========================================= */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.grid-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.card-ia {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.card-ia h2 {
+    font-size: 18px;
+    color: var(--text-white);
+    margin-bottom: 4px;
+}
+
+.card-ia p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.card-stat {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-stat h3 {
+    font-size: 14px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.card-stat p {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.text-success { color: var(--text-success); }
+.text-danger { color: var(--text-danger); }
+.text-white { color: var(--text-white); }
+
+.grid-saldo {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+/* =========================================
+   Formulário de Lançamento
+   ========================================= */
+.mb-section {
+    margin-bottom: 32px;
+}
+
+.section-title {
+    font-size: 18px;
+    color: var(--text-white);
+    margin-bottom: 20px;
+}
+
+.form-lancamento {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mt-2 {
+    margin-top: 8px;
+}
+
+/* =========================================
+   Gráfico
+   ========================================= */
+.chart-wrapper {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.chart-container {
+    width: 100%;
+    height: 300px;
+    position: relative;
+}
+
+/* =========================================
+   Responsividade (Telas Menores)
+   ========================================= */
+@media (max-width: 1024px) {
+    .grid-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .grid-saldo {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar-lateral {
+        display: none; /* Esconde a sidebar no mobile para não ocupar tela */
+    }
+    
+    .grid-cards, .grid-saldo {
+        grid-template-columns: 1fr;
+    }
+    
+    .card-ia {
+        grid-column: span 1;
+    }
+
+    .main-content {
+        padding: 16px;
+    }
+
+    .header h1 {
+        font-size: 20px;
+    }
+}
