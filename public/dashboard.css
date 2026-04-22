@@ -40,46 +40,92 @@ body {
     overflow: hidden;
 }
 
-/* Sidebar */
+/* =========================================
+   SIDEBAR EXPANSÍVEL (HOVER)
+   ========================================= */
 .sidebar-lateral {
     width: 80px;
     background-color: var(--bg-card);
     border-right: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
-    align-items: center;
     padding: 24px 0;
+    position: relative;
+    z-index: 1000;
+    /* Animação suave de abertura e fecho */
+    transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease;
+    overflow-x: hidden;
+    align-items: flex-start;
 }
 
-.logo-f {
-    color: #f97316; /* Laranja */
-    font-size: 24px;
-    font-weight: bold;
+/* Quando o rato passa por cima */
+.sidebar-lateral:hover {
+    width: 240px;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.3); /* Sombra para separar do conteúdo */
+}
+
+/* O cabeçalho com o Logotipo */
+.sidebar-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: 28px;
     margin-bottom: 40px;
 }
 
-.sidebar-menu {
+.logo-f {
+    color: #f97316;
+    font-size: 24px;
+    font-weight: bold;
+    flex-shrink: 0; 
+}
+
+.logo-text {
+    color: var(--text-white);
+    font-size: 18px;
+    font-weight: 700;
+    margin-left: 0;
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: opacity 0.3s ease, margin-left 0.3s ease;
+}
+
+.sidebar-lateral:hover .logo-text {
+    opacity: 1;
+    width: auto;
+    margin-left: 12px;
+}
+
+/* Os botões de navegação */
+.sidebar-menu, .sidebar-footer {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
     width: 100%;
-    align-items: center;
+    align-items: flex-start;
+}
+
+.sidebar-footer {
+    margin-top: auto;
 }
 
 .sidebar-item {
     background: none;
     border: none;
     color: var(--text-muted);
-    width: 40px;
-    height: 40px;
-    padding: 8px;
+    width: 44px; /* Tamanho da "bolinha" fechada */
+    height: 44px;
+    margin-left: 18px; /* Mantém o ícone centrado visualmente nos 80px */
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; 
+    padding-left: 14px; 
     text-decoration: none;
+    transition: width 0.4s ease, background-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
 }
 
 .sidebar-item:hover {
@@ -91,29 +137,47 @@ body {
     color: var(--color-primary);
 }
 
-.sidebar-footer {
-    margin-top: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    align-items: center;
+/* Quando a sidebar abre, a "bolinha" vira um "botão largo" */
+.sidebar-lateral:hover .sidebar-item {
+    width: calc(100% - 36px); 
 }
 
+/* O texto que fica ao lado dos ícones */
+.sidebar-text {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-left: 0;
+    font-size: 14px;
+    font-weight: 500;
+    transition: opacity 0.3s ease, margin-left 0.3s ease;
+}
+
+.sidebar-lateral:hover .sidebar-text {
+    opacity: 1;
+    width: auto;
+    margin-left: 16px;
+}
+
+/* Bolinha de notificação */
 .notification-icon {
     position: relative;
 }
 
 .red-dot {
     position: absolute;
-    top: 6px;
-    right: 8px;
+    top: 10px;
+    left: 24px; 
     width: 8px;
     height: 8px;
     background-color: var(--text-danger);
     border-radius: 50%;
 }
 
-/* Conteúdo Principal */
+/* =========================================
+   Conteúdo Principal e SPA
+   ========================================= */
 .main-content {
     flex: 1;
     padding: 32px;
@@ -134,6 +198,17 @@ body {
     letter-spacing: 0.5px;
 }
 
+.spa-section {
+    display: none; 
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+
+.spa-section.active {
+    display: block; 
+    opacity: 1;
+}
+
 /* =========================================
    Botões e Inputs
    ========================================= */
@@ -146,12 +221,14 @@ body {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
     box-shadow: 0 4px 14px rgba(91, 88, 245, 0.3);
 }
 
 .btn-primary:hover {
     background-color: var(--color-primary-hover);
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 20px rgba(91, 88, 245, 0.5);
 }
 
 .input-field {
@@ -163,11 +240,12 @@ body {
     border-radius: 8px;
     outline: none;
     font-size: 14px;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .input-field:focus {
     border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(91, 88, 245, 0.2);
 }
 
 .input-field::placeholder {
@@ -183,6 +261,13 @@ body {
     border-radius: 12px;
     padding: 24px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    border-color: rgba(91, 88, 245, 0.4); 
 }
 
 .grid-cards {
@@ -190,6 +275,53 @@ body {
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
     margin-bottom: 32px;
+}
+
+.card-meta {
+    background-color: #1a1f2b;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+    border: 1px solid #2d3446;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.card-meta:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    border-color: #4facfe; 
+}
+
+.meta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+#meta-percentual-badge {
+    background: #4facfe;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.progress-bar-container {
+    background-color: #2d3446;
+    border-radius: 10px;
+    height: 12px;
+    width: 100%;
+    margin: 10px 0;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+    height: 100%;
+    width: 0%; 
+    border-radius: 10px;
+    transition: width 1.5s ease-in-out;
 }
 
 /* Card Assistente IA */
@@ -292,7 +424,6 @@ body {
 .text-danger { color: var(--text-danger); }
 .text-white { color: var(--text-white); }
 
-/* Card de Saldo */
 .card-saldo {
     justify-content: flex-start;
     padding-bottom: 12px;
@@ -312,7 +443,6 @@ body {
    ========================================= */
 .dashboard-grid {
     display: grid;
-    /* Divide a tela: Esquerda maior (2.2), Direita menor (1) */
     grid-template-columns: 2.2fr 1fr; 
     gap: 24px;
 }
@@ -320,15 +450,13 @@ body {
 .grid-column {
     display: flex;
     flex-direction: column;
-    gap: 24px; /* Espaço entre os cards da mesma coluna */
+    gap: 24px; 
 }
 
-/* Remove a margem inferior extra dos cards dentro da coluna */
 .grid-column .card {
     margin-bottom: 0; 
 }
 
-/* Manter a classe mb-section caso você use ela solta depois */
 .mb-section {
     margin-bottom: 32px;
 }
@@ -408,7 +536,6 @@ body {
     border-bottom: none;
 }
 
-/* Efeito de Hover (Brilho) na linha da tabela */
 .lancamentos-table tbody tr {
     transition: background-color 0.2s ease;
 }
@@ -446,51 +573,389 @@ body {
 }
 
 /* =========================================
+   Toasts (Notificações Flutuantes)
+   ========================================= */
+.toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 10000;
+}
+
+.toast {
+    background-color: var(--bg-card);
+    border-left: 4px solid var(--color-primary);
+    color: var(--text-white);
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 280px;
+    transform: translateX(120%); 
+    opacity: 0;
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.5s ease;
+}
+
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast.success { border-left-color: var(--text-success); }
+.toast.success i { color: var(--text-success); font-size: 18px; }
+
+.toast.error { border-left-color: var(--text-danger); }
+.toast.error i { color: var(--text-danger); font-size: 18px; }
+
+/* =========================================
+   Animação do Sininho
+   ========================================= */
+@keyframes ring-bell {
+    0% { transform: rotate(0); }
+    20% { transform: rotate(20deg); }
+    40% { transform: rotate(-15deg); }
+    60% { transform: rotate(10deg); }
+    80% { transform: rotate(-5deg); }
+    100% { transform: rotate(0); }
+}
+
+.ringing i {
+    animation: ring-bell 0.6s ease-in-out;
+    color: var(--text-white); 
+}
+
+/* =========================================
+   CENTRAL DE NOTIFICAÇÕES (PAINEL)
+   ========================================= */
+.painel-notificacoes {
+    position: fixed;
+    left: 90px; 
+    bottom: 80px; 
+    width: 320px;
+    max-height: 400px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px) scale(0.95);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.painel-notificacoes.aberto {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0) scale(1);
+}
+
+.notif-header-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.notif-header-panel h3 { font-size: 15px; color: var(--text-white); }
+
+.btn-limpar {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.btn-limpar:hover { color: var(--text-danger); }
+
+.notif-body {
+    padding: 10px 0;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.notif-item {
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(42, 52, 73, 0.3);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: background 0.2s;
+}
+
+.notif-item:hover { background-color: rgba(255, 255, 255, 0.02); }
+.notif-item:last-child { border-bottom: none; }
+
+.notif-icon { font-size: 16px; margin-top: 2px; }
+
+.notif-content p {
+    font-size: 13px;
+    color: var(--text-main);
+    line-height: 1.4;
+    margin-bottom: 4px;
+}
+
+.notif-time { font-size: 11px; color: var(--text-muted); }
+
+.notif-vazia {
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* =========================================
    Responsividade (Media Queries)
    ========================================= */
 @media (max-width: 1024px) {
-    /* No tablet, os cards do topo viram 2 colunas */
-    .grid-cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    /* Faz o card da IA ocupar a linha inteira */
-    .card-ia {
-        grid-column: span 2;
-    }
-    
-    /* Quebra a coluna de baixo: Tabela e Gráficos ficam empilhados */
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
+    .grid-cards { grid-template-columns: repeat(2, 1fr); }
+    .card-ia { grid-column: span 2; }
+    .dashboard-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-    /* Esconde o menu lateral no celular */
     .sidebar-lateral {
-        display: none;
+        width: 60px; /* Ainda mais pequena em mobile */
     }
     
-    /* No celular, todos os cards do topo ficam empilhados */
-    .grid-cards {
-        grid-template-columns: 1fr;
+    .sidebar-lateral:hover {
+        width: 60px; /* Não expande em ecrãs pequenos para não tapar o conteúdo */
     }
     
-    /* Volta o card IA para ocupar só 1 coluna na grade empilhada */
-    .card-ia {
-        grid-column: span 1;
+    .logo-text, .sidebar-text {
+        display: none; /* Esconde textos no telemóvel */
     }
 
-    /* Coloca os campos do formulário um embaixo do outro no celular */
-    .form-grid {
-        grid-template-columns: 1fr; 
+    .sidebar-item {
+        margin-left: 8px;
     }
 
-    .main-content {
-        padding: 16px;
-    }
-
-    .header h1 {
-        font-size: 20px;
+    .grid-cards { grid-template-columns: 1fr; }
+    .card-ia { grid-column: span 1; }
+    .form-grid { grid-template-columns: 1fr; }
+    .main-content { padding: 16px; }
+    .header h1 { font-size: 20px; }
+    
+    /* Ajusta o painel de notificações para mobile */
+    .painel-notificacoes {
+        left: 20px;
+        right: 20px;
+        width: auto;
+        bottom: 70px;
     }
 }
+/* =========================================
+   TEMA CLARO (LIGHT MODE)
+   ========================================= */
+body.light-mode {
+    --bg-dark: #f3f4f6;       /* Cinza muito claro para o fundo */
+    --bg-card: #ffffff;       /* Branco puro para os cartões */
+    --bg-input: #f9fafb;      /* Cinza subtil para inputs */
+    --text-main: #1f2937;     /* Cinza escuro para texto base */
+    --text-muted: #6b7280;    /* Cinza médio para textos secundários */
+    --color-border: #e5e7eb;  /* Bordas mais suaves */
+    --text-white: #111827;    /* Transforma o texto que era branco em quase preto */
+}
+
+/* Ajustes finos para o Tema Claro não estragar cores importantes */
+body.light-mode .btn-primary { color: #ffffff; }
+body.light-mode #meta-percentual-badge { color: #ffffff; }
+body.light-mode .progress-fill { border: 1px solid rgba(0,0,0,0.1); }
+body.light-mode .toast { background-color: #ffffff; color: #111827; }
+body.light-mode .ia-icon-wrapper { color: #ffffff; }
+
+/* =========================================
+   PAINEL LATERAL (CONFIGURAÇÕES)
+   ========================================= */
+.painel-lateral {
+    position: fixed;
+    top: 0;
+    right: -400px; /* Fica escondido fora do ecrã à direita */
+    width: 350px;
+    height: 100vh;
+    background-color: var(--bg-card);
+    border-left: 1px solid var(--color-border);
+    box-shadow: -10px 0 40px rgba(0,0,0,0.3);
+    z-index: 10001;
+    transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.painel-lateral.aberto {
+    right: 0; /* Desliza para dentro do ecrã */
+}
+
+.painel-header {
+    padding: 24px;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.painel-header h2 {
+    font-size: 18px;
+    color: var(--text-white);
+}
+
+.btn-fechar-painel {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-fechar-painel:hover { color: var(--text-danger); transform: scale(1.1); }
+
+.painel-body {
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.config-item h4 {
+    color: var(--text-white);
+    margin-bottom: 12px;
+    font-size: 15px;
+}
+
+.config-item p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+/* =========================================
+   TOP BAR (CABEÇALHO DE PERFIL)
+   ========================================= */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.top-bar-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.top-icon-btn, .notification-wrapper {
+    background: var(--bg-input);
+    border: 1px solid var(--color-border);
+    color: var(--text-muted);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.2s;
+    position: relative;
+}
+
+.top-icon-btn:hover, .notification-wrapper:hover {
+    color: var(--text-white);
+    border-color: var(--color-primary);
+}
+
+.notification-wrapper .red-dot {
+    top: 0px;
+    right: 2px;
+}
+
+/* Secção de Perfil (Avatar + Dropdown) */
+.profile-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    position: relative;
+    padding: 4px 8px;
+    border-radius: 30px;
+    transition: background 0.2s;
+}
+
+.profile-section:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid transparent;
+    transition: 0.2s;
+}
+
+.profile-section:hover .avatar { border-color: var(--color-primary); }
+
+.chevron-icon { font-size: 12px; color: var(--text-muted); transition: 0.3s; }
+.profile-section.active .chevron-icon { transform: rotate(180deg); }
+
+/* O Menu Flutuante */
+.profile-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--color-border);
+    width: 220px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.profile-section.active .profile-dropdown {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+}
+
+.dropdown-header { padding: 16px; }
+.user-name { color: var(--text-white); font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.user-role { color: var(--text-muted); font-size: 12px; }
+
+.profile-dropdown hr { border: 0; border-top: 1px solid var(--color-border); margin: 0; }
+
+.profile-dropdown a {
+    padding: 12px 16px;
+    color: var(--text-main);
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.2s;
+}
+
+.profile-dropdown a:hover { background: rgba(255,255,255,0.03); color: var(--color-primary); }
+.profile-dropdown a.logout-link:hover { color: var(--text-danger); }

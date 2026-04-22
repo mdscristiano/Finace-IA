@@ -35,7 +35,7 @@ const openai = new OpenAI({
 });
 
 // ==========================================
-// BANCO DE DADOS
+// BANCO DE DADOS (ATUALIZADO)
 // ==========================================
 db.serialize(() => {
   db.run(`
@@ -46,21 +46,30 @@ db.serialize(() => {
     )
   `);
 
+  // ATUALIZADO: Tabela agora possui descricao e data
   db.run(`
     CREATE TABLE IF NOT EXISTS gastos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       categoria TEXT,
+      descricao TEXT,
       valor REAL,
+      data TEXT,
       user_id INTEGER
     )
   `);
 
+  // Migração automática: Adiciona as colunas novas caso a tabela antiga já exista
   db.all(`PRAGMA table_info(gastos)`, [], (err, columns) => {
     if (err) return;
+    
     const hasUserId = columns.some((col) => col.name === "user_id");
-    if (!hasUserId) {
-      db.run(`ALTER TABLE gastos ADD COLUMN user_id INTEGER`);
-    }
+    if (!hasUserId) db.run(`ALTER TABLE gastos ADD COLUMN user_id INTEGER`);
+
+    const hasDescricao = columns.some((col) => col.name === "descricao");
+    if (!hasDescricao) db.run(`ALTER TABLE gastos ADD COLUMN descricao TEXT`);
+
+    const hasData = columns.some((col) => col.name === "data");
+    if (!hasData) db.run(`ALTER TABLE gastos ADD COLUMN data TEXT`);
   });
 });
 
@@ -111,14 +120,15 @@ app.post("/login", (req, res) => {
 });
 
 // ==========================================
-// DADOS
+// DADOS (ATUALIZADO)
 // ==========================================
 app.post("/gastos", (req, res) => {
-  const { user_id, categoria, valor } = req.body;
+  // ATUALIZADO: Recebendo descricao e data do frontend
+  const { user_id, categoria, descricao, valor, data } = req.body;
 
   db.run(
-    "INSERT INTO gastos (user_id, categoria, valor) VALUES (?, ?, ?)",
-    [user_id, categoria, valor],
+    "INSERT INTO gastos (user_id, categoria, descricao, valor, data) VALUES (?, ?, ?, ?, ?)",
+    [user_id, categoria, descricao, valor, data],
     function (err) {
       if (err) return res.status(500).json({ erro: err.message });
 
@@ -130,53 +140,52 @@ app.post("/gastos", (req, res) => {
 app.get("/dashboard/:user_id", (req, res) => {
   const { user_id } = req.params;
 
+  // ATUALIZADO: Retorna os lançamentos detalhados em vez de agrupá-los no banco.
+  // Usamos 'valor as total' para não quebrar a lógica antiga antes de atualizarmos o frontend.
   db.all(
-    "SELECT categoria, SUM(valor) as total FROM gastos WHERE user_id = ? GROUP BY categoria",
+    "SELECT id, categoria, descricao, valor as total, data FROM gastos WHERE user_id = ? ORDER BY data DESC",
     [user_id],
     (err, rows) => {
       if (err) return res.status(500).json({ erro: err.message });
-
-      const totalGeral = rows.reduce((acc, r) => acc + Number(r.total), 0);
-
-      const resultado = rows.map((r) => ({
-        categoria: r.categoria,
-        total: Number(r.total),
-        percentual:
-          totalGeral > 0
-            ? ((r.total / totalGeral) * 100).toFixed(2)
-            : "0.00"
-      }));
-
-      res.json(resultado);
+      
+      res.json(rows);
     }
   );
 });
 
 // ==========================================
-// IA - OPENAI 🔥
+// IA - OPENAI 🔥 (ATUALIZADO PARA PERSONALIDADE)
 // ==========================================
 app.post("/analisar", async (req, res) => {
-  const dados = req.body;
+  // NOVO: Recebendo a variável tom_ia
+  const { transacoes, saldoAtual, objetivoMeta, tom_ia } = req.body;
 
-  if (!dados || dados.length === 0) {
+  if (!transacoes || transacoes.length === 0) {
     return res.status(400).json({ erro: "Nenhum dado enviado" });
   }
 
   try {
-    console.log("🔑 OPENAI:", process.env.OPENAI_API_KEY ? "OK" : "ERRO");
+    const percentagem = ((saldoAtual / objetivoMeta) * 100).toFixed(1);
+    const faltam = objetivoMeta - saldoAtual;
 
+    // NOVO: Injetando o tom no Prompt
     const prompt = `
-Você é um consultor financeiro inteligente.
+Você é ${tom_ia || "um consultor financeiro inteligente"}.
 
-Analise os dados:
-${JSON.stringify(dados)}
+DADOS FINANCEIROS:
+${JSON.stringify(transacoes)}
+
+CONTEXTO DA META:
+- Saldo Atual: R$ ${saldoAtual}
+- Objetivo: R$ ${objetivoMeta}
+- Progresso: ${percentagem}% alcançado.
+- Faltam: R$ ${faltam} para atingir a meta.
 
 Responda com:
-1. Situação geral
-2. Problema principal
-3. Ação prática
+1. Uma análise rápida do saldo vs meta.
+2. Uma dica prática baseada nas transações para economizar e chegar mais rápido no objetivo.
 
-Máximo 3 frases, linguagem simples.
+Máximo 3 frases. Mantenha-se estritamente fiel à sua personalidade definida acima.
 `;
 
     const response = await openai.chat.completions.create({
@@ -191,7 +200,6 @@ Máximo 3 frases, linguagem simples.
 
   } catch (error) {
     console.error("🚨 ERRO OPENAI:", error);
-
     res.status(500).json({
       erro: "Erro na IA",
       detalhe: error.message
