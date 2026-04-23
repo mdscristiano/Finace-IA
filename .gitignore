@@ -28,3 +28,6 @@ yarn-error.log*
 
 # Arquivos de sistema operacional (se você ou alguém do time usar Mac)
 .DS_Store
+
+# Ficheiros temporários de upload
+uploads/

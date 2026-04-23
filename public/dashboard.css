@@ -959,3 +959,280 @@ body.light-mode .ia-icon-wrapper { color: #ffffff; }
 
 .profile-dropdown a:hover { background: rgba(255,255,255,0.03); color: var(--color-primary); }
 .profile-dropdown a.logout-link:hover { color: var(--text-danger); }
+
+/* =========================================
+   CLASSES UTILITÁRIAS PARA HTML
+   ========================================= */
+
+/* Botão Theme Toggle */
+.btn-toggle-theme {
+    width: 100%;
+    background: var(--bg-input);
+    color: var(--text-white);
+    border: 1px solid var(--color-border);
+    box-shadow: none;
+}
+
+.btn-toggle-theme:hover {
+    background: var(--color-primary);
+}
+
+/* Botão Danger */
+.btn-danger {
+    width: 100%;
+    background-color: var(--text-danger);
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
+/* Ícone pequeno com margem */
+.icon-small-margin {
+    margin-right: 8px;
+}
+
+/* HR com cor de borda */
+.divider-subtle {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+}
+
+/* Heading Danger */
+.heading-danger {
+    color: var(--text-danger);
+}
+
+/* Red Dot Hidden */
+.red-dot-hidden {
+    display: none;
+}
+
+/* Chevron para cima */
+.chevron-up-muted {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+/* Margem superior para seções */
+.margin-top-32 {
+    margin-top: 32px;
+}
+
+.margin-top-15 {
+    margin-top: 15px;
+}
+
+.margin-bottom-15 {
+    margin-bottom: 15px;
+}
+
+.margin-bottom-20 {
+    margin-bottom: 20px;
+}
+
+/* Section Title Sem Margem Inferior */
+.section-title-no-margin {
+    margin-bottom: 0;
+}
+
+/* Select Input Inline */
+.input-field-inline {
+    width: auto;
+    padding: 6px 12px;
+}
+
+/* Chart Container com altura customizada */
+.chart-container-350 {
+    position: relative;
+    height: 350px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.chart-container-300 {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.chart-container-450 {
+    position: relative;
+    height: 450px;
+    width: 100%;
+}
+
+/* Tabela com font-size maior */
+.lancamentos-table-large {
+    font-size: 16px;
+}
+
+/* Células de tabela com estilos customizados */
+.table-cell-success-bold {
+    color: var(--text-success);
+    font-weight: bold;
+}
+
+.table-cell-success {
+    text-align: right;
+    color: var(--text-success);
+}
+
+.table-cell-danger {
+    color: var(--text-danger);
+}
+
+.table-cell-right {
+    text-align: right;
+}
+
+.table-cell-right-danger {
+    text-align: right;
+    color: var(--text-danger);
+    font-weight: bold;
+}
+
+.table-row-highlight {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.table-row-border-top {
+    border-top: 2px solid var(--color-border);
+    font-size: 18px;
+}
+
+.table-cell-bold {
+    font-weight: bold;
+}
+
+.table-cell-bold-primary {
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+/* Grid Column com flex */
+.grid-column-flex-15 {
+    flex: 1.5;
+}
+
+.grid-column-flex-1 {
+    flex: 1;
+}
+
+/* Text Align Right */
+.text-right {
+    text-align: right;
+}
+
+/* Text Muted */
+.text-muted-small {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+/* Input com padding customizado */
+.input-field-padding {
+    padding: 10px;
+}
+
+/* Botão full-width */
+.btn-full-width {
+    width: 100%;
+}
+
+/* Flexbox com justify-content space-between */
+.flex-space-between {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+/* Badge com background primário */
+.badge-primary {
+    background: var(--color-primary);
+    color: white;
+    padding: 10px;
+    font-size: 14px;
+}
+
+/* Progress Bar com gradient danger */
+.progress-fill-danger {
+    width: 85%;
+    background: linear-gradient(90deg, #f59e0b 0%, #ef4444 100%);
+}
+
+/* HR com margem */
+.divider-large {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    margin: 30px 0;
+}
+
+/* Forma grid com margem superior */
+.form-grid-margin-top {
+    margin-top: 15px;
+}
+
+/* Forma group com margem superior */
+.form-group-margin-top {
+    margin-top: 15px;
+}
+
+/* Classes adicionais para estilos inline remanescentes */
+
+.flex-center-space-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.section-title-no-margin-custom {
+    margin: 0;
+}
+
+.badge-custom {
+    font-size: 14px;
+    padding: 6px 12px;
+}
+
+.progress-bar-custom {
+    height: 10px;
+    background-color: var(--bg-dark);
+}
+
+.text-danger-bold {
+    color: var(--text-danger);
+    font-weight: bold;
+}
+
+.flex-column-gap-24 {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.margin-top-10 {
+    margin-top: 10px;
+}
+
+.remember-me-label {
+    color: var(--muted);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.checkbox-auto {
+    width: auto;
+}
+
+.forgot-password-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 14px;
+}

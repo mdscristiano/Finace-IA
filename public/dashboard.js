@@ -1,5 +1,5 @@
 // ==========================================
-// 1. O PORTEIRO (Segurança)
+// 1. O PORTEIRO (Segurança e Autenticação)
 // ==========================================
 const token = localStorage.getItem('token');
 
@@ -18,7 +18,7 @@ function getUserId() {
     }
 }
 
-const userId = getUserId();
+const userId = getUserId(); // Mantido para lógicas locais, mas não é mais enviado para a API!
 
 // ==========================================
 // VARIÁVEIS GLOBAIS E FUNÇÕES AUXILIARES
@@ -117,14 +117,30 @@ function animarNumero(idElemento, valorFinal) {
 // ==========================================
 async function carregarDashboard() {
     try {
-        const resposta = await fetch(`/dashboard/${userId}`);
+        const resposta = await fetch(`/dashboard`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
         const dados = await resposta.json();
 
         if (resposta.ok) {
             transacoesGlobais = dados;
             aplicarFiltro();
+
+            // Alerta de contas atrasadas
+            const contasAtrasadas = dados.filter(item => item.status === 'atrasado');
+            if (contasAtrasadas.length > 0) {
+                setTimeout(() => {
+                    mostrarToast(`🚨 Atenção: Tens ${contasAtrasadas.length} conta(s) atrasada(s)!`, "error");
+                }, 1000);
+            }
+
         } else {
             console.error("Erro ao carregar dados:", dados.erro);
+            if (resposta.status === 401 || resposta.status === 403) logout();
         }
     } catch (erro) {
         console.error("Erro de conexão:", erro);
@@ -143,9 +159,11 @@ function aplicarFiltro() {
 
     const dadosFiltrados = transacoesGlobais.filter(item => {
         if (filtro === 'tudo') return true;
-        if (!item.data) return true;
+        
+        const dataBase = item.data_vencimento || item.data;
+        if (!dataBase) return true;
 
-        const dataItem = new Date(item.data + 'T12:00:00');
+        const dataItem = new Date(dataBase + 'T12:00:00');
         const diffTempo = Math.abs(hoje - dataItem);
         const diffDias = Math.ceil(diffTempo / (1000 * 60 * 60 * 24));
 
@@ -162,7 +180,7 @@ function aplicarFiltro() {
 }
 
 // ==========================================
-// 3. ATUALIZAR A TELA (Números e Tabela)
+// 3. ATUALIZAR A TELA E TABELA
 // ==========================================
 function atualizarTela(dadosParaExibir) {
     totalReceitas = 0;
@@ -176,32 +194,58 @@ function atualizarTela(dadosParaExibir) {
     if (tabela) tabela.innerHTML = "";
 
     dadosParaExibir.forEach(item => {
-        if (item.categoria.includes("Receita")) {
-            totalReceitas += item.total;
-        } else {
-            totalGastos += item.total;
-            const nomeCategoria = item.categoria.replace('Gasto - ', '');
-            somaCategorias[nomeCategoria] = (somaCategorias[nomeCategoria] || 0) + item.total;
+        const isReceita = item.tipo === 'receita' || item.categoria.includes("Receita");
+
+        // Só soma no saldo/gráficos se já estiver pago!
+        if (item.status === 'pago' || !item.status) {
+            if (isReceita) {
+                totalReceitas += item.total;
+            } else {
+                totalGastos += item.total;
+                const nomeCategoria = item.categoria.replace('Gasto - ', '');
+                somaCategorias[nomeCategoria] = (somaCategorias[nomeCategoria] || 0) + item.total;
+            }
         }
 
+        // Definição da Data (prioriza vencimento)
         let dataFormatada = "Sem Data";
-        if (item.data) {
-            const dataObj = new Date(item.data + 'T12:00:00');
+        const dataBase = item.data_vencimento || item.data;
+        if (dataBase) {
+            const dataObj = new Date(dataBase + 'T12:00:00');
             dataFormatada = dataObj.toLocaleDateString('pt-BR');
+        }
+
+        let badgeStatus = '';
+        let btnAcao = '';
+
+        if (item.status === 'pago' || !item.status) {
+            badgeStatus = '<span style="background:#10b98122; color:#10b981; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold;">Pago</span>';
+        } else if (item.status === 'pendente') {
+            badgeStatus = '<span style="background:#f59e0b22; color:#f59e0b; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold;">Pendente</span>';
+            btnAcao = `<button onclick="marcarComoPago(${item.id})" style="background:var(--color-primary, #8b5cf6); border:none; color:white; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px; margin-top:4px;"><i class="fa-solid fa-check"></i> Dar Baixa</button>`;
+        } else if (item.status === 'atrasado') {
+            badgeStatus = '<span style="background:#ef444422; color:#ef4444; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold;">Atrasado</span>';
+            btnAcao = `<button onclick="marcarComoPago(${item.id})" style="background:var(--color-primary, #8b5cf6); border:none; color:white; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px; margin-top:4px;"><i class="fa-solid fa-check"></i> Dar Baixa</button>`;
         }
 
         if (tabela) {
             tabela.innerHTML += `
                 <tr>
                     <td class="desc-cell">
-                        <div class="icon-box ${item.categoria.includes('Receita') ? 'icon-receita' : 'icon-gasto'}">
-                            <i class="fa-solid ${item.categoria.includes('Receita') ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                        <div class="icon-box ${isReceita ? 'icon-receita' : 'icon-gasto'}">
+                            <i class="fa-solid ${isReceita ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
                         </div>
-                        ${item.descricao || 'Lançamento Antigo'}
+                        <div style="display:flex; flex-direction:column;">
+                            <span>${item.descricao || 'Lançamento'}</span>
+                            <span style="font-size: 11px; color: var(--muted);">${dataFormatada}</span>
+                        </div>
                     </td>
-                    <td><span class="badge ${item.categoria.includes('Receita') ? 'badge-success' : 'badge-danger'}">${item.categoria}</span></td>
-                    <td style="color: ${item.categoria.includes('Receita') ? 'var(--success)' : 'var(--danger)'};">${formatarMoeda(item.total)}</td>
-                    <td style="color: var(--muted);">${dataFormatada}</td>
+                    <td><span class="badge ${isReceita ? 'badge-success' : 'badge-danger'}">${item.categoria}</span></td>
+                    <td style="color: ${isReceita ? 'var(--success)' : 'var(--danger)'};">${formatarMoeda(item.total)}</td>
+                    <td style="text-align: right;">
+                        ${badgeStatus}
+                        <br>${btnAcao}
+                    </td>
                 </tr>
             `;
         }
@@ -237,6 +281,7 @@ function atualizarTela(dadosParaExibir) {
 
     desenharGraficos(categoriasGastos, valoresGastos, totalReceitas, totalGastos, saldoFinal);
 }
+
 // ==========================================
 // MENU DE PERFIL (TOP BAR)
 // ==========================================
@@ -247,16 +292,13 @@ function toggleProfileMenu() {
     }
 }
 
-// Fechar o menu se clicar fora dele
 document.addEventListener('click', function(event) {
     const profileSection = document.querySelector('.profile-section');
     if (profileSection && !profileSection.contains(event.target)) {
         profileSection.classList.remove('active');
     }
 });
-// ==========================================
-// MODO PRIVACIDADE
-// ==========================================
+
 function togglePrivacidade() {
     privacidadeAtiva = !privacidadeAtiva;
     const elementosValores = [
@@ -325,10 +367,7 @@ function desenharGraficos(labelsPizza, dadosPizza, receitas, gastos, saldoFinal)
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: { color: corTexto, padding: 20, font: { size: 14 } }
-                        }
+                        legend: { position: 'right', labels: { color: corTexto, padding: 20, font: { size: 14 } } }
                     },
                     cutout: '65%'
                 }
@@ -384,7 +423,7 @@ function desenharGraficos(labelsPizza, dadosPizza, receitas, gastos, saldoFinal)
 }
 
 // ==========================================
-// 5. ADICIONAR NOVO LANÇAMENTO E CATEGORIA
+// 5. ADICIONAR NOVO LANÇAMENTO (ATUALIZADO)
 // ==========================================
 async function adicionarNovoLancamento() {
     const descricao = document.getElementById('descInput').value || "Sem Descrição";
@@ -392,35 +431,62 @@ async function adicionarNovoLancamento() {
     let valorStr = document.getElementById('valorInput').value;
     const dataEscolhida = document.getElementById('dataInput').value || new Date().toISOString().split('T')[0];
 
+    const statusElement = document.getElementById('statusInput');
+    const statusValor = statusElement ? statusElement.value : 'pago';
+    
+    const vencimentoElement = document.getElementById('vencimentoInput');
+    const vencimentoValor = (vencimentoElement && vencimentoElement.value) ? vencimentoElement.value : dataEscolhida;
+
+    // NOVO: Captura os inputs de Conta e Entidade (se existirem)
+    const contaValor = document.getElementById('contaInput') ? document.getElementById('contaInput').value : 'Carteira';
+    const entidadeValor = document.getElementById('entidadeInput') ? document.getElementById('entidadeInput').value : 'Geral';
+
     if (!valorStr || parseFloat(valorStr) <= 0) {
         mostrarToast("Por favor, insira um valor válido acima de zero.", "error");
         return;
     }
 
+    const tipoLancamento = categoria.includes('Receita') ? 'receita' : 'despesa';
+
     const novoGasto = {
-        user_id: userId,
         categoria: categoria,
         descricao: descricao,
         valor: parseFloat(valorStr),
-        data: dataEscolhida
+        data: dataEscolhida,
+        tipo: tipoLancamento,
+        status: statusValor,
+        data_vencimento: vencimentoValor,
+        conta: contaValor,      // Adicionado
+        entidade: entidadeValor // Adicionado
     };
 
     try {
         const resposta = await fetch('/gastos', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
+            },
             body: JSON.stringify(novoGasto)
         });
 
         if (resposta.ok) {
+            // Limpar formulário
             document.getElementById('descInput').value = "";
             document.getElementById('valorInput').value = "";
             document.getElementById('dataInput').value = "";
+            if (statusElement) statusElement.value = "pago";
+            if (vencimentoElement) vencimentoElement.value = "";
+            if (document.getElementById('entidadeInput')) document.getElementById('entidadeInput').value = "";
+            
+            // Recarregar Dados
             carregarDashboard();
-
+            carregarDRE(); // NOVO: Atualiza a Inteligência Contábil automaticamente
+            
             mostrarToast("Lançamento registado com sucesso!", "success");
         } else {
-            mostrarToast("Ocorreu um erro ao guardar.", "error");
+            const erroData = await resposta.json();
+            mostrarToast("Ocorreu um erro ao guardar: " + erroData.erro, "error");
         }
     } catch (erro) {
         mostrarToast("Erro de ligação ao servidor.", "error");
@@ -429,26 +495,101 @@ async function adicionarNovoLancamento() {
 
 function adicionarCategoriaCustomizada() {
     const nome = document.getElementById('novaCatNome').value.trim();
-
-    if (!nome) {
-        mostrarToast("Por favor, digita um nome para a categoria.", "error");
-        return;
-    }
+    if (!nome) return mostrarToast("Por favor, digita um nome para a categoria.", "error");
 
     const select = document.getElementById('catInput');
-
     const novaOpcao = document.createElement('option');
     novaOpcao.value = `Gasto - ${nome}`;
     novaOpcao.text = `Gasto - ${nome}`;
-
     select.appendChild(novaOpcao);
 
     document.getElementById('novaCatNome').value = "";
     mostrarToast(`A categoria "${nome}" foi adicionada ao menu de lançamentos!`, "success");
+    setTimeout(() => { navegarPara('view-home'); }, 1500);
+}
 
-    setTimeout(() => {
-        navegarPara('view-home');
-    }, 1500);
+// ==========================================
+// DAR BAIXA (MARCAR COMO PAGO)
+// ==========================================
+async function marcarComoPago(idTransacao) {
+    if (!confirm("Confirmar o pagamento/recebimento desta transação?")) return;
+
+    try {
+        const resposta = await fetch(`/gastos/${idTransacao}/pagar`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (resposta.ok) {
+            mostrarToast("Transação baixada com sucesso!", "success");
+            carregarDashboard(); 
+            carregarDRE(); // NOVO: Ao pagar, atualiza o DRE
+        } else {
+            mostrarToast("Erro ao tentar atualizar o status.", "error");
+        }
+    } catch (erro) {
+        mostrarToast("Erro de conexão.", "error");
+    }
+}
+
+// ==========================================
+// NOVO: RELATÓRIO DRE (INTELIGÊNCIA CONTÁBIL)
+// ==========================================
+async function carregarDRE() {
+    try {
+        const resposta = await fetch(`/relatorio/dre`, { 
+            headers: { 'Authorization': `Bearer ${token}` } 
+        });
+        const dre = await resposta.json();
+
+        if (resposta.ok) {
+            // Atualiza os valores na tabela DRE do HTML
+            if(document.getElementById('dre-bruta')) document.getElementById('dre-bruta').innerText = formatarMoeda(dre.receitaBruta);
+            if(document.getElementById('dre-impostos')) document.getElementById('dre-impostos').innerText = formatarMoeda(dre.impostos);
+            if(document.getElementById('dre-liquida')) document.getElementById('dre-liquida').innerText = formatarMoeda(dre.receitaLiquida);
+            if(document.getElementById('dre-variaveis')) document.getElementById('dre-variaveis').innerText = formatarMoeda(dre.custosVariaveis);
+            if(document.getElementById('dre-fixos')) document.getElementById('dre-fixos').innerText = formatarMoeda(dre.custosFixos);
+            if(document.getElementById('dre-lucro')) document.getElementById('dre-lucro').innerText = formatarMoeda(dre.lucroLiquido);
+            if(document.getElementById('dre-margem')) document.getElementById('dre-margem').innerText = `${dre.margem}%`;
+        }
+    } catch (e) { 
+        console.error("Erro ao carregar o DRE:", e); 
+    }
+}
+
+// ==========================================
+// NOVO: IMPORTAÇÃO DE CONCILIAÇÃO BANCÁRIA (CSV)
+// ==========================================
+async function importarCSV() {
+    const fileInput = document.getElementById('arquivoCSV');
+    if (!fileInput || fileInput.files.length === 0) {
+        return mostrarToast("Seleciona um ficheiro CSV primeiro.", "error");
+    }
+
+    const formData = new FormData();
+    formData.append("ficheiro", fileInput.files[0]);
+
+    try {
+        // Ao usar FormData, o navegador ajusta os headers multipart automaticamente
+        const resposta = await fetch('/upload-csv', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+        });
+
+        const dados = await resposta.json();
+        
+        if (resposta.ok) {
+            mostrarToast(`Sucesso! ${dados.importados} transações importadas.`, "success");
+            fileInput.value = ""; // Limpa o input de arquivo
+            carregarDashboard();
+            carregarDRE();
+        } else {
+            mostrarToast(dados.erro || "Erro ao importar CSV.", "error");
+        }
+    } catch (e) { 
+        mostrarToast("Erro na importação de ficheiros.", "error"); 
+    }
 }
 
 // ==========================================
@@ -498,24 +639,18 @@ function criarNovaMeta() {
     const objetivo = parseFloat(document.getElementById('valorObjetivoInput').value);
     const atual = parseFloat(document.getElementById('valorGuardadoInput').value) || 0;
 
-    if (!nome || !objetivo || objetivo <= 0) {
-        mostrarToast("Preenche o nome e um objetivo válido.", "error");
-        return;
-    }
+    if (!nome || !objetivo || objetivo <= 0) return mostrarToast("Preenche o nome e um objetivo válido.", "error");
 
     const icones = ["✈️", "🚗", "🏠", "💻", "💍", "🎓", "🎮", "🚀"];
     const cores = ["#10b981", "#8b5cf6", "#f59e0b", "#ec4899", "#14b8a6", "#3b82f6"];
-
-    const iconeAleatorio = icones[Math.floor(Math.random() * icones.length)];
-    const corAleatoria = cores[Math.floor(Math.random() * cores.length)];
 
     const novaMeta = {
         id: Date.now(),
         nome: nome,
         objetivo: objetivo,
         atual: atual,
-        icone: iconeAleatorio,
-        cor: corAleatoria
+        icone: icones[Math.floor(Math.random() * icones.length)],
+        cor: cores[Math.floor(Math.random() * cores.length)]
     };
 
     metasGlobais.push(novaMeta);
@@ -534,10 +669,7 @@ function adicionarDinheiroMeta(id) {
     if (!valorStr) return;
 
     const valor = parseFloat(valorStr);
-    if (isNaN(valor) || valor <= 0) {
-        mostrarToast("Valor inválido.", "error");
-        return;
-    }
+    if (isNaN(valor) || valor <= 0) return mostrarToast("Valor inválido.", "error");
 
     const metaIndex = metasGlobais.findIndex(m => m.id === id);
     if (metaIndex > -1) {
@@ -588,19 +720,12 @@ function mostrarToast(mensagem, tipo = 'success') {
 
     const toast = document.createElement('div');
     toast.className = `toast ${tipo}`;
-
     const icone = tipo === 'success' ? 'fa-check-circle' : (tipo === 'info' ? 'fa-info-circle' : 'fa-circle-exclamation');
 
-    toast.innerHTML = `
-        <i class="fa-solid ${icone}"></i>
-        <span>${mensagem}</span>
-    `;
-
+    toast.innerHTML = `<i class="fa-solid ${icone}"></i><span>${mensagem}</span>`;
     container.appendChild(toast);
 
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 10);
+    setTimeout(() => { toast.classList.add('show'); }, 10);
 
     const iconSino = document.querySelector('.notification-icon');
     if (iconSino) {
@@ -617,16 +742,8 @@ function mostrarToast(mensagem, tipo = 'success') {
 }
 
 function adicionarNotificacaoPainel(mensagem, tipo, iconeClass) {
-    const nova = {
-        id: Date.now(),
-        mensagem: mensagem,
-        tipo: tipo,
-        icone: iconeClass,
-        data: new Date().toISOString()
-    };
-
+    const nova = { id: Date.now(), mensagem: mensagem, tipo: tipo, icone: iconeClass, data: new Date().toISOString() };
     historicoNotificacoes.unshift(nova);
-
     if (historicoNotificacoes.length > 20) historicoNotificacoes.pop();
 
     localStorage.setItem('notificacoes_historico', JSON.stringify(historicoNotificacoes));
@@ -654,7 +771,6 @@ function renderizarNotificacoes() {
         const dataObj = new Date(notif.data);
         const hora = dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
         const dataStr = dataObj.toLocaleDateString('pt-BR');
-
         const corClass = notif.tipo === 'success' ? 'var(--text-success)' : (notif.tipo === 'info' ? '#4facfe' : 'var(--text-danger)');
 
         lista.innerHTML += `
@@ -694,7 +810,7 @@ function limparNotificacoes() {
 }
 
 // ==========================================
-// 7. INTELIGÊNCIA ARTIFICIAL E SAIR
+// 7. INTELIGÊNCIA ARTIFICIAL
 // ==========================================
 async function analisar() {
     const btn = document.querySelector('.btn-ia');
@@ -707,20 +823,14 @@ async function analisar() {
     if (display) display.innerText = "Analisando suas finanças...";
 
     try {
-        const filtro = document.getElementById('filtro-tempo').value || 'tudo';
-        let textoFiltro = "Todo o Período";
-        const dropdownFiltro = document.getElementById('filtro-tempo');
-        if (dropdownFiltro) {
-            const opcaoSelecionada = document.querySelector(`#filtro-tempo option[value="${filtro}"]`);
-            if (opcaoSelecionada) textoFiltro = opcaoSelecionada.innerText;
-        }
-        
         const tomEscolhido = localStorage.getItem('ia_tone') || "um consultor financeiro motivador, amigável e otimista";
 
-        // AQUI ESTAVA O ERRO DE DUPLICAÇÃO! AGORA HÁ APENAS UM FETCH!
         const response = await fetch('/analisar', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
+            },
             body: JSON.stringify({
                 transacoes: transacoesGlobais,
                 saldoAtual: saldoAtual,
@@ -730,11 +840,9 @@ async function analisar() {
         });
 
         const data = await response.json();
-
         if (display) display.innerText = "Análise concluída!";
 
         mostrarModalIA(data.mensagem);
-
         mostrarToast("A IA gerou um novo relatório de análise para ti.", "info");
 
     } catch (error) {
@@ -849,6 +957,7 @@ function apagarDadosLocais() {
 window.onload = () => {
     carregarConfiguracoesSalvas();
     carregarDashboard();
+    carregarDRE(); // NOVO: Carrega os dados da Aba "Relatórios" ao iniciar
     renderizarMetas();
     renderizarNotificacoes();
 };

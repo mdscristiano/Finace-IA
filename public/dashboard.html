@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Finance IA -Dashboard</title>
+    <title>Finance IA - Dashboard</title>
     <link rel="stylesheet" href="navbar.css" />
     <link rel="stylesheet" href="dashboard.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -25,7 +25,7 @@
           </a>
           <a href="#" class="sidebar-item" id="nav-charts" onclick="navegarPara('view-charts')">
             <i class="fas fa-chart-line"></i>
-            <span class="sidebar-text">Relatórios</span>
+            <span class="sidebar-text">Relatórios (DRE)</span>
           </a>
           <a href="#" class="sidebar-item" id="nav-pizza" onclick="navegarPara('view-pizza')">
             <i class="fas fa-chart-pie"></i>
@@ -58,8 +58,8 @@
             
             <div class="config-item">
                 <h4>Tema Visual</h4>
-                <button class="btn-primary" style="width: 100%; background: var(--bg-input); color: var(--text-white); border: 1px solid var(--color-border); box-shadow: none;" onclick="toggleTema()">
-                    <i class="fas fa-adjust" style="margin-right: 8px;"></i> Alternar Claro / Escuro
+                <button class="btn-primary btn-toggle-theme btn-full-width" onclick="toggleTema()">
+                    <i class="fas fa-adjust icon-small-margin"></i> Alternar Claro / Escuro
                 </button>
             </div>
 
@@ -72,13 +72,13 @@
                 </select>
             </div>
 
-            <hr style="border: 0; border-top: 1px solid var(--color-border);">
+            <hr class="divider-subtle">
 
             <div class="config-item">
-                <h4 style="color: var(--text-danger);">Zona de Perigo</h4>
+                <h4 class="heading-danger">Zona de Perigo</h4>
                 <p>Isto irá resetar as tuas metas e o histórico de notificações locais. (Os teus gastos continuarão salvos no banco de dados).</p>
-                <button class="btn-primary" style="width: 100%; background-color: var(--text-danger);" onclick="apagarDadosLocais()">
-                    <i class="fas fa-trash-alt" style="margin-right: 8px;"></i> Resetar Dados Locais
+                <button class="btn-primary btn-danger btn-full-width" onclick="apagarDadosLocais()">
+                    <i class="fas fa-trash-alt icon-small-margin"></i> Resetar Dados Locais
                 </button>
             </div>
 
@@ -112,7 +112,7 @@
 
               <div class="notification-wrapper" onclick="toggleNotificacoes()">
                 <i class="fa-regular fa-bell"></i>
-                <span class="red-dot" id="notif-dot" style="display: none;"></span>
+                <span class="red-dot red-dot-hidden" id="notif-dot"></span>
               </div>
 
               <div class="profile-section" onclick="toggleProfileMenu()">
@@ -172,7 +172,7 @@
             <div class="card card-stat card-saldo">
               <div class="stat-header">
                 <h3>Saldo Atual</h3>
-                <i class="fa-solid fa-chevron-up" style="color: var(--text-muted); font-size: 12px"></i>
+                <i class="fa-solid fa-chevron-up chevron-up-muted"></i>
               </div>
               <p id="saldo" class="text-white">R$ 0,00</p>
               <div class="mini-chart-container">
@@ -195,12 +195,12 @@
               </div>
           </div>
 
-          <div class="dashboard-grid" style="margin-top: 32px;">
+          <div class="dashboard-grid margin-top-32">
             <div class="grid-column">
               <section class="card mb-section">
                 <div class="stat-header">
-                  <h2 class="section-title" style="margin-bottom: 0">Fluxo de Caixa</h2>
-                  <select id="filtro-tempo" class="input-field" style="width: auto; padding: 6px 12px" onchange="aplicarFiltro()">
+                  <h2 class="section-title section-title-no-margin">Fluxo de Caixa</h2>
+                  <select id="filtro-tempo" class="input-field input-field-inline" onchange="aplicarFiltro()">
                     <option value="tudo">Todo o Período</option>
                     <option value="semanal">Últimos 7 dias (Semanal)</option>
                     <option value="mensal">Este Mês (Mensal)</option>
@@ -209,7 +209,7 @@
                     <option value="anual">Este Ano (Anual)</option>
                   </select>
                 </div>
-                <div class="chart-container" style="position: relative; height: 350px; width: 100%; margin-top: 20px;">
+                <div class="chart-container-350">
                   <canvas id="fluxoCaixaChart"></canvas>
                 </div>
               </section>
@@ -220,10 +220,10 @@
                   <table class="lancamentos-table">
                     <thead>
                       <tr>
-                        <th>Descrição</th>
+                        <th>Descrição / Data</th>
                         <th>Categoria</th>
                         <th>Valor</th>
-                        <th>Data</th>
+                        <th class="table-cell-right">Status</th>
                       </tr>
                     </thead>
                     <tbody id="tabela-lancamentos"></tbody>
@@ -235,7 +235,7 @@
             <div class="grid-column">
               <section class="card mb-section">
                 <h2 class="section-title">Análise Vertical</h2>
-                <div class="chart-container" style="position: relative; height: 300px; width: 100%">
+                <div class="chart-container-300">
                   <canvas id="financeChart"></canvas>
                 </div>
               </section>
@@ -263,8 +263,39 @@
                     </div>
                   </div>
 
-                  <label class="input-label" for="dataInput">Data</label>
-                  <input id="dataInput" type="date" class="input-field mb-3" />
+                  <div class="form-grid form-grid-margin-top">
+                    <div class="form-group">
+                      <label class="input-label">Conta/Carteira</label>
+                      <select id="contaInput" class="input-field">
+                        <option value="Carteira Física">Carteira Física</option>
+                        <option value="Caixa da Empresa">Caixa da Empresa</option>
+                        <option value="Conta Banco">Conta Banco</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label class="input-label">Cliente / Fornecedor</label>
+                      <input id="entidadeInput" type="text" placeholder="Nome (ex: João, Fornecedor X)" class="input-field" />
+                    </div>
+                  </div>
+
+                  <div class="form-grid form-grid-margin-top">
+                    <div class="form-group">
+                      <label class="input-label" for="dataInput">Data Lançamento</label>
+                      <input id="dataInput" type="date" class="input-field" />
+                    </div>
+                    <div class="form-group">
+                      <label class="input-label" for="vencimentoInput">Vencimento (Opcional)</label>
+                      <input id="vencimentoInput" type="date" class="input-field" />
+                    </div>
+                  </div>
+
+                  <div class="form-group mb-3 form-group-margin-top">
+                    <label class="input-label" for="statusInput">Status do Pagamento</label>
+                    <select id="statusInput" class="input-field">
+                      <option value="pago">Já Pago / Recebido</option>
+                      <option value="pendente">Pendente (A Pagar / Receber)</option>
+                    </select>
+                  </div>
 
                   <button type="button" class="btn-primary" onclick="adicionarNovoLancamento()">
                     Adicionar Lançamento
@@ -277,12 +308,65 @@
         
         <section id="view-charts" class="spa-section">
             <header class="header">
-                <h1>Relatórios Detalhados</h1>
+                <h1>Inteligência Contábil</h1>
             </header>
-            <div class="card">
-                <p>Aqui poderemos colocar gráficos em tamanho real para uma análise mais profunda do teu histórico financeiro.</p>
-                <div style="height: 400px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
-                    <i class="fas fa-chart-bar" style="font-size: 48px; margin-right: 15px;"></i> Em construção...
+            
+            <div class="dashboard-grid">
+                <div class="grid-column grid-column-flex-15">
+                    <section class="card mb-section">
+                        <h2 class="section-title">DRE - Demonstração do Resultado</h2>
+                        <div class="table-container">
+                            <table class="lancamentos-table lancamentos-table-large">
+                                <tbody>
+                                    <tr>
+                                        <td class="table-cell-success-bold">(+) Receita Bruta</td>
+                                        <td id="dre-bruta" class="table-cell-success">R$ 0,00</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="table-cell-danger">(-) Impostos</td>
+                                        <td id="dre-impostos" class="table-cell-right">R$ 0,00</td>
+                                    </tr>
+                                    <tr class="table-row-highlight">
+                                        <td class="table-cell-bold">(=) Receita Líquida</td>
+                                        <td id="dre-liquida" class="table-cell-right table-cell-bold">R$ 0,00</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="table-cell-danger">(-) Custos Variáveis (Serviços/Materiais)</td>
+                                        <td id="dre-variaveis" class="table-cell-right">R$ 0,00</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="table-cell-danger">(-) Custos Fixos (Software/Renda)</td>
+                                        <td id="dre-fixos" class="table-cell-right">R$ 0,00</td>
+                                    </tr>
+                                    <tr class="table-row-border-top">
+                                        <td class="table-cell-bold-primary">(=) Lucro Líquido</td>
+                                        <td id="dre-lucro" class="table-cell-right table-cell-bold-primary">R$ 0,00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="margin-top-15 text-right">
+                            <span class="badge badge-primary">
+                                Margem de Lucro: <strong id="dre-margem">0%</strong>
+                            </span>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="grid-column grid-column-flex-1">
+                    <section class="card mb-section">
+                        <h2 class="section-title">Conciliação Bancária</h2>
+                        <p class="text-muted-small">
+                            Importa o ficheiro CSV (separado por ponto e vírgula) do extrato do teu banco para lançar tudo automaticamente.
+                        </p>
+                        <form id="formCSV" enctype="multipart/form-data">
+                            <label for="arquivoCSV" class="input-label">Selecione o ficheiro CSV</label>
+                            <input type="file" id="arquivoCSV" accept=".csv" class="input-field mb-3 input-field-padding"/>
+                            <button type="button" class="btn-primary btn-full-width" onclick="importarCSV()">
+                                <i class="fa-solid fa-file-import"></i> Importar Extrato
+                            </button>
+                        </form>
+                    </section>
                 </div>
             </div>
         </section>
@@ -293,36 +377,36 @@
             </header>
             
             <div class="dashboard-grid">
-                <div class="grid-column" style="flex: 1.5;">
+                <div class="grid-column grid-column-flex-15">
                     <section class="card mb-section">
                         <h2 class="section-title">Onde gastas o teu dinheiro?</h2>
-                        <div class="chart-container" style="position: relative; height: 450px; width: 100%">
+                        <div class="chart-container-450">
                             <canvas id="pizzaChartGrande"></canvas>
                         </div>
                     </section>
                 </div>
 
-                <div class="grid-column" style="flex: 1;">
+                <div class="grid-column grid-column-flex-1">
                     <section class="card mb-section">
                         <h2 class="section-title">Limites de Gastos (Simulação)</h2>
-                        <div id="lista-limites" style="margin-bottom: 20px;">
-                            <div style="margin-bottom: 20px;">
-                                <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:8px;">
+                        <div id="lista-limites" class="margin-bottom-20">
+                            <div class="margin-bottom-20">
+                                <div class="flex-space-between">
                                     <span>🍔 Alimentação</span>
-                                    <span style="color:var(--text-danger); font-weight: bold;">R$ 850 / R$ 1.000</span>
+                                    <span class="text-danger-bold">R$ 850 / R$ 1.000</span>
                                 </div>
-                                <div class="progress-bar-container" style="height: 10px; background-color: var(--bg-dark);">
-                                    <div class="progress-fill" style="width: 85%; background: linear-gradient(90deg, #f59e0b 0%, #ef4444 100%);"></div>
+                                <div class="progress-bar-container progress-bar-custom">
+                                    <div class="progress-fill progress-fill-danger"></div>
                                 </div>
                             </div>
                         </div>
                         
-                        <hr style="border: 0; border-top: 1px solid var(--color-border); margin: 30px 0;">
+                        <hr class="divider-large">
 
                         <h2 class="section-title">Criar Nova Categoria</h2>
                         <form class="form-lancamento">
                             <input type="text" id="novaCatNome" placeholder="Nome (ex: Netflix, Ginásio)" class="input-field mb-3" />
-                            <button type="button" class="btn-primary" style="width: 100%;" onclick="adicionarCategoriaCustomizada()">
+                            <button type="button" class="btn-primary btn-full-width" onclick="adicionarCategoriaCustomizada()">
                                 <i class="fa-solid fa-plus"></i> Adicionar ao Menu
                             </button>
                         </form>
@@ -337,21 +421,21 @@
             </header>
             
             <div class="dashboard-grid">
-                <div class="grid-column" style="flex: 1.5;">
+                <div class="grid-column grid-column-flex-15">
                     <section class="card mb-section">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                            <h2 class="section-title" style="margin: 0;">As Tuas Metas</h2>
-                            <span class="badge badge-success" id="total-guardado-badge" style="font-size: 14px; padding: 6px 12px;">
+                        <div class="flex-center-space-between">
+                            <h2 class="section-title section-title-no-margin-custom">As Tuas Metas</h2>
+                            <span class="badge badge-success badge-custom" id="total-guardado-badge">
                                 R$ 0,00 Guardados
                             </span>
                         </div>
                         
-                        <div id="lista-metas-detalhada" style="display: flex; flex-direction: column; gap: 24px;">
+                        <div id="lista-metas-detalhada" class="flex-column-gap-24">
                         </div>
                     </section>
                 </div>
 
-                <div class="grid-column" style="flex: 1;">
+                <div class="grid-column grid-column-flex-1">
                     <section class="card mb-section">
                         <h2 class="section-title">Criar Nova Meta</h2>
                         <form class="form-lancamento">
@@ -364,7 +448,7 @@
                             <label class="input-label">Valor Inicial Guardado (R$)</label>
                             <input id="valorGuardadoInput" type="number" placeholder="0.00" class="input-field mb-3" />
 
-                            <button type="button" class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="criarNovaMeta()">
+                            <button type="button" class="btn-primary btn-full-width margin-top-10" onclick="criarNovaMeta()">
                                 <i class="fa-solid fa-plus"></i> Adicionar Meta
                             </button>
                         </form>

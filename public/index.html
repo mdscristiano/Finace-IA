@@ -24,28 +24,43 @@
           
           <form onsubmit="realizarLogin(event)">
             <div class="form-group">
-              <label>E-mail</label>
+              <label for="login-email">E-mail</label>
               <div class="input-wrapper">
-                <input type="email" id="login-email" placeholder="O seu e-mail" required oninput="validarEmail(this)" />
-                <i class="fa-solid fa-check check-icon"></i>
+                <input 
+                  type="email" 
+                  id="login-email" 
+                  placeholder="O seu e-mail" 
+                  required 
+                  aria-label="Email para login"
+                  aria-describedby="email-help"
+                  oninput="validarEmail(this)" 
+                />
+                <i class="fa-solid fa-check check-icon" aria-hidden="true"></i>
               </div>
             </div>
             <div class="form-group">
-              <label>Senha</label>
+              <label for="login-senha">Senha</label>
               <div class="input-wrapper">
-                <input type="password" id="login-senha" placeholder="A sua senha" required />
-                <i class="fa-regular fa-eye toggle-password" onclick="togglePassword(this)"></i>
+                <input 
+                  type="password" 
+                  id="login-senha" 
+                  placeholder="A sua senha" 
+                  required 
+                  aria-label="Senha para login"
+                  aria-describedby="password-help"
+                />
+                <i class="fa-regular fa-eye toggle-password" onclick="togglePassword(this)" role="button" tabindex="0" aria-label="Mostrar senha"></i>
               </div>
             </div>
             
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-              <label style="color: var(--muted); font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                <input type="checkbox" style="width: auto;"> Lembrar-me
+            <div class="flex-center-space-between">
+              <label class="remember-me-label">
+                <input type="checkbox" class="checkbox-auto" aria-label="Lembrar-me neste computador"> Lembrar-me
               </label>
-              <a href="#" onclick="alternarTela('box-forgot')" style="color: var(--primary); text-decoration: none; font-size: 14px;">Esqueceu a senha?</a>
+              <a href="#" onclick="alternarTela('box-forgot')" class="forgot-password-link">Esqueceu a senha?</a>
             </div>
             
-            <button type="submit" id="btn-login" class="btn btn-primary" style="width: 100%;">Entrar na plataforma</button>
+            <button type="submit" id="btn-login" class="btn btn-primary btn-full-width" aria-label="Entrar na plataforma">Entrar na plataforma</button>
           </form>
           
           <p class="footer-text">
@@ -59,34 +74,59 @@
           
           <form onsubmit="realizarCadastro(event)">
             <div class="form-group">
-              <label>Nome completo</label>
-              <input type="text" id="reg-nome" placeholder="O seu nome" required />
+              <label for="reg-nome">Nome completo</label>
+              <input 
+                type="text" 
+                id="reg-nome" 
+                placeholder="O seu nome" 
+                required 
+                aria-label="Nome completo"
+              />
             </div>
             <div class="form-group">
-              <label>E-mail</label>
+              <label for="reg-email">E-mail</label>
               <div class="input-wrapper">
-                <input type="email" id="reg-email" placeholder="O seu e-mail" required oninput="validarEmail(this)" />
-                <i class="fa-solid fa-check check-icon"></i>
+                <input 
+                  type="email" 
+                  id="reg-email" 
+                  placeholder="O seu e-mail" 
+                  required 
+                  aria-label="Email para cadastro"
+                  oninput="validarEmail(this)" 
+                />
+                <i class="fa-solid fa-check check-icon" aria-hidden="true"></i>
               </div>
             </div>
             
             <div class="form-group">
-              <label>Senha</label>
+              <label for="reg-senha">Senha</label>
               <div class="input-wrapper">
-                <input type="password" id="reg-senha" placeholder="Crie uma senha" required />
-                <i class="fa-regular fa-eye toggle-password" onclick="togglePassword(this)"></i>
+                <input 
+                  type="password" 
+                  id="reg-senha" 
+                  placeholder="Crie uma senha" 
+                  required 
+                  aria-label="Senha para cadastro"
+                />
+                <i class="fa-regular fa-eye toggle-password" onclick="togglePassword(this)" role="button" tabindex="0" aria-label="Mostrar senha"></i>
               </div>
             </div>
             <div class="form-group">
-              <label>Confirmar Senha</label>
+              <label for="reg-senha-conf">Confirmar Senha</label>
               <div class="input-wrapper">
-                <input type="password" id="reg-senha-conf" placeholder="Repita a senha" required />
-                <i class="fa-regular fa-eye toggle-password" onclick="togglePassword(this)"></i>
+                <input 
+                  type="password" 
+                  id="reg-senha-conf" 
+                  placeholder="Repita a senha" 
+                  required 
+                  aria-label="Confirmar senha"
+                />
+                <i class="fa-regular fa-eye toggle-password" onclick="togglePassword(this)" role="button" tabindex="0" aria-label="Mostrar senha"></i>
               </div>
             </div>
             <p id="erro-senha" class="error-text hidden">As senhas não coincidem!</p>
             
-            <button type="submit" id="btn-register" class="btn btn-primary" style="width: 100%;">Cadastrar</button>
+            <button type="submit" id="btn-register" class="btn btn-primary btn-full-width" aria-label="Cadastrar nova conta">Cadastrar</button>
           </form>
           
           <p class="footer-text">
@@ -100,14 +140,21 @@
           
           <form onsubmit="solicitarRecuperacao(event)">
             <div class="form-group">
-              <label>E-mail registado</label>
+              <label for="forgot-email">E-mail registado</label>
               <div class="input-wrapper">
-                <input type="email" id="forgot-email" placeholder="O seu e-mail" required oninput="validarEmail(this)" />
-                <i class="fa-solid fa-check check-icon"></i>
+                <input 
+                  type="email" 
+                  id="forgot-email" 
+                  placeholder="O seu e-mail" 
+                  required 
+                  aria-label="Email para recuperação de senha"
+                  oninput="validarEmail(this)" 
+                />
+                <i class="fa-solid fa-check check-icon" aria-hidden="true"></i>
               </div>
             </div>
             
-            <button type="submit" id="btn-forgot" class="btn btn-primary" style="width: 100%;">Enviar Link</button>
+            <button type="submit" id="btn-forgot" class="btn btn-primary btn-full-width" aria-label="Enviar link de recuperação">Enviar Link</button>
           </form>
           
           <p class="footer-text">
@@ -121,13 +168,19 @@
           
           <form onsubmit="redefinirSenha(event)">
             <div class="form-group">
-              <label>A sua nova senha</label>
+              <label for="reset-senha">A sua nova senha</label>
               <div class="input-wrapper">
-                <input type="password" id="reset-senha" placeholder="Digite a nova senha" required />
-                <i class="fa-regular fa-eye toggle-password" onclick="togglePassword(this)"></i>
+                <input 
+                  type="password" 
+                  id="reset-senha" 
+                  placeholder="Digite a nova senha" 
+                  required 
+                  aria-label="Nova senha para recuperação"
+                />
+                <i class="fa-regular fa-eye toggle-password" onclick="togglePassword(this)" role="button" tabindex="0" aria-label="Mostrar senha"></i>
               </div>
             </div>
-            <button type="submit" id="btn-reset" class="btn btn-primary" style="width: 100%;">Salvar Nova Senha</button>
+            <button type="submit" id="btn-reset" class="btn btn-primary btn-full-width" aria-label="Salvar nova senha">Salvar Nova Senha</button>
           </form>
           
           <p class="footer-text">
